@@ -1,35 +1,46 @@
 package com.example.repos
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.repos.data.Repository
+import com.example.repos.data.GithubRepo
 import com.example.repos.data.RetrofitInstance
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@OptIn(FlowPreview::class)
 class SearchViewModel : ViewModel() {
 
-    private val _repositories = MutableLiveData<List<Repository>>()
-    val repositories: LiveData<List<Repository>>
-        get() = _repositories
+    val searchQuery = MutableStateFlow("")
+
+    private val _githubRepos = MutableStateFlow<List<GithubRepo>>(emptyList())
+    val githubRepos: StateFlow<List<GithubRepo>> = _githubRepos
+
 
     init {
-        test()
-    }
-
-    fun test() {
         viewModelScope.launch {
-            val response = RetrofitInstance.api.getTopThreeRepos("user:nytimes")
-            _repositories.value = response.items
+            searchQuery
+                .debounce(2000)
+                .distinctUntilChanged()
+                .filter { it.isNotBlank() }
+                .onEach { typedQuery ->
+                    val userPrefix = "user:"
+                    val query = userPrefix + typedQuery
+                    try {
+                        val results = RetrofitInstance.api.getTopThreeRepos(query)
+                        _githubRepos.value = results.items
+                    } catch (e: Exception) {
+                        // handle error
+                    }
+                }
+                .collect()
         }
     }
 
-    fun searchRepos(org: String) {
-        viewModelScope.launch {
 
-            val response = RetrofitInstance.api.getTopThreeRepos(org)
-            _repositories.value = response.items
-        }
+
+    fun onSearchQueryChanged(query: String) {
+        searchQuery.value = query
     }
+
 }

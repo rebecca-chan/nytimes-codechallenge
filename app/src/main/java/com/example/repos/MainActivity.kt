@@ -1,7 +1,6 @@
 package com.example.repos
 
 import android.os.Bundle
-import android.view.RoundedCorner
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -14,7 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.repos.data.Repository
+import com.example.repos.data.GithubRepo
 import com.example.repos.ui.theme.ReposTheme
 
 class MainActivity : ComponentActivity() {
@@ -47,19 +47,26 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SearchResultsScreen(modifier: Modifier = Modifier, viewModel: SearchViewModel) {
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val searchResults by viewModel.githubRepos.collectAsState()
+
     Column(modifier) {
-        SearchBar()
-        RepoSearchResults(viewModel = viewModel)
+        SearchBar(searchQuery = searchQuery, onSearchQueryChanged = {
+            viewModel.onSearchQueryChanged(it)
+        })
+        RepoSearchResults(repos = searchResults)
     }
 }
 
 @Composable
 fun SearchBar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit
 ) {
     TextField(
-        value = "",
-        onValueChange = {},
+        value = searchQuery,
+        onValueChange = onSearchQueryChanged,
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp),
@@ -74,17 +81,17 @@ fun SearchBar(
         ),
         placeholder = {
             Text(stringResource(R.string.search_placeholder))
-        }
+        },
+        singleLine = true,
     )
 }
 
 @Composable
 fun RepoSearchResults(
-    modifier: Modifier = Modifier, viewModel: SearchViewModel
+    modifier: Modifier = Modifier, repos: List<GithubRepo>
 ) {
-    val repos = viewModel.repositories.observeAsState(emptyList())
     LazyColumn(modifier = Modifier.padding(top = 16.dp)) {
-        items(repos.value) {
+        items(repos) {
             RepoItem(repo = it)
             Divider(
                 color = Color.Black,
@@ -96,13 +103,12 @@ fun RepoSearchResults(
 }
 
 @Composable
-fun RepoItem(modifier: Modifier = Modifier, repo: Repository) {
-    Surface(
-        modifier = Modifier.clip(RoundedCornerShape(8.dp))
-    ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)) {
+fun RepoItem(modifier: Modifier = Modifier, repo: GithubRepo) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
             Text(
                 text = repo.fullName, style = MaterialTheme.typography.h5,
                 color = Color.Blue,
@@ -119,8 +125,6 @@ fun RepoItem(modifier: Modifier = Modifier, repo: Repository) {
                 Text(repo.stars.toString())
             }
         }
-    }
-
 }
 
 
@@ -128,13 +132,14 @@ fun RepoItem(modifier: Modifier = Modifier, repo: Repository) {
 @Composable
 fun DefaultPreview() {
     ReposTheme {
-        val item = Repository(
+        val item = GithubRepo(
             name = "NYTimes",
             fullName = "nytimes/coolRepo",
             "a cool repo",
             1000,
             "https://github.com"
         )
-        RepoItem(repo = item)
+//        RepoItem(repo = item)
+        SearchBar(searchQuery = "nytimes", onSearchQueryChanged = {})
     }
 }
