@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">repos</string>
+    <string name="search_placeholder">Search by Organization</string>
+</resources>
