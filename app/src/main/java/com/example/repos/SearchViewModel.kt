@@ -27,6 +27,7 @@ class SearchViewModel : ViewModel() {
 
     fun searchRepos(org: String) {
         viewModelScope.launch {
+
             val response = RetrofitInstance.api.getTopThreeRepos(org)
             _repositories.value = response.items
         }
