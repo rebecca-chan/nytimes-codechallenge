@@ -3,19 +3,24 @@ package com.example.repos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.repos.data.GithubRepo
-import com.example.repos.data.RetrofitInstance
+import com.example.repos.data.GithubSearchRepository
+import com.example.repos.data.Results
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@HiltViewModel
 @OptIn(FlowPreview::class)
-class SearchViewModel : ViewModel() {
+class SearchViewModel @Inject constructor(
+    private val repository: GithubSearchRepository
+) : ViewModel() {
 
     val searchQuery = MutableStateFlow("")
 
     private val _githubRepos = MutableStateFlow<List<GithubRepo>>(emptyList())
     val githubRepos: StateFlow<List<GithubRepo>> = _githubRepos
-
 
     init {
         viewModelScope.launch {
@@ -23,21 +28,17 @@ class SearchViewModel : ViewModel() {
                 .debounce(2000)
                 .distinctUntilChanged()
                 .filter { it.isNotBlank() }
-                .onEach { typedQuery ->
-                    val userPrefix = "user:"
-                    val query = userPrefix + typedQuery
-                    try {
-                        val results = RetrofitInstance.api.getTopThreeRepos(query)
-                        _githubRepos.value = results.items
-                    } catch (e: Exception) {
-                        // handle error
+                .onEach { query ->
+
+                   val result = repository.getTopThreeRepos(query)
+                    when(result) {
+                        is Results.Success -> _githubRepos.value = result.data
+                        else -> {}
                     }
                 }
                 .collect()
         }
     }
-
-
 
     fun onSearchQueryChanged(query: String) {
         searchQuery.value = query
