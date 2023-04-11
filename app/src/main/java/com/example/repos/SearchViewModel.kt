@@ -17,31 +17,55 @@ class SearchViewModel @Inject constructor(
     private val repository: GithubSearchRepository
 ) : ViewModel() {
 
-    val searchQuery = MutableStateFlow("")
-
-    private val _githubRepos = MutableStateFlow<List<GithubRepo>>(emptyList())
-    val githubRepos: StateFlow<List<GithubRepo>> = _githubRepos
+    val uiState = MutableStateFlow(UiState())
 
     init {
+        /**
+         * Flow set up to collect typed search queries and search for repos by query
+         */
         viewModelScope.launch {
-            searchQuery
-                .debounce(2000)
+            uiState
+                .debounce(1000)
                 .distinctUntilChanged()
-                .filter { it.isNotBlank() }
-                .onEach { query ->
-
-                   val result = repository.getTopThreeRepos(query)
-                    when(result) {
-                        is Results.Success -> _githubRepos.value = result.data
-                        else -> {}
-                    }
+                .filter { it.searchQuery.isNotBlank() }
+                .onEach {
+                    searchRepoByOrg(it)
                 }
                 .collect()
         }
     }
 
-    fun onSearchQueryChanged(query: String) {
-        searchQuery.value = query
+    private suspend fun searchRepoByOrg(it: UiState) {
+        uiState.update { it.copy(loading = true) }
+        val result = repository.getTopThreeRepos(it.searchQuery)
+        when (result) {
+            is Results.Success -> uiState.update {
+                it.copy(
+                    loading = false,
+                    githubRepos = result.data
+                )
+            }
+            is Results.Error -> uiState.update {
+                it.copy(
+                    loading = false,
+                    error = result.error.message.toString()
+                )
+            }
+        }
+        uiState.update { it.copy(loading = false) }
     }
+
+    fun onSearchQueryChanged(query: String) {
+        uiState.update {
+            it.copy(searchQuery = query, error = "")
+        }
+    }
+
+    data class UiState(
+        val searchQuery: String = "",
+        val githubRepos: List<GithubRepo> = emptyList(),
+        val loading: Boolean = false,
+        val error: String = ""
+    )
 
 }
