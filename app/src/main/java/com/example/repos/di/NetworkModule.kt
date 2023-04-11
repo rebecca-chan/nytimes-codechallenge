@@ -1,6 +1,6 @@
 package com.example.repos.di
 
-import com.example.repos.data.GithubSearchApi
+import com.example.repos.data.GithubRepoApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,8 +17,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideGithubSearchApi(retrofit: Retrofit) : GithubSearchApi {
-        return retrofit.create(GithubSearchApi::class.java)
+    fun provideGithubSearchApi(retrofit: Retrofit) : GithubRepoApi {
+        return retrofit.create(GithubRepoApi::class.java)
     }
 
     @Provides

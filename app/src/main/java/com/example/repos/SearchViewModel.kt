@@ -3,7 +3,7 @@ package com.example.repos
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.repos.data.GithubRepo
-import com.example.repos.data.GithubSearchRepository
+import com.example.repos.data.GithubRepoRepository
 import com.example.repos.data.Results
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -14,15 +14,19 @@ import javax.inject.Inject
 @HiltViewModel
 @OptIn(FlowPreview::class)
 class SearchViewModel @Inject constructor(
-    private val repository: GithubSearchRepository
+    private val repository: GithubRepoRepository
 ) : ViewModel() {
 
     val uiState = MutableStateFlow(UiState())
 
     init {
-        /**
-         * Flow set up to collect typed search queries and search for repos by query
-         */
+        searchRepoByOrgWithDebounce()
+    }
+
+    /**
+     * Flow set up to collect typed search queries and search for repos by query
+     */
+    private fun searchRepoByOrgWithDebounce() {
         viewModelScope.launch {
             uiState
                 .debounce(1000)
@@ -37,16 +41,18 @@ class SearchViewModel @Inject constructor(
 
     private suspend fun searchRepoByOrg(it: UiState) {
         uiState.update { it.copy(loading = true) }
-        val result = repository.getTopThreeRepos(it.searchQuery)
-        when (result) {
-            is Results.Success -> uiState.update {
-                it.copy(
-                    loading = false,
-                    githubRepos = result.data
-                )
+        when (val result = repository.getTopThreeRepos(it.searchQuery)) {
+            is Results.Success -> {
+                uiState.update {
+                    it.copy(
+                        loading = false,
+                        githubRepos = result.data
+                    )
+                }
             }
             is Results.Error -> uiState.update {
                 it.copy(
+                    githubRepos = emptyList(),
                     loading = false,
                     error = result.error.message.toString()
                 )

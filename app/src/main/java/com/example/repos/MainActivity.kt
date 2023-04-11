@@ -158,20 +158,3 @@ fun RepoItem(modifier: Modifier = Modifier, repo: GithubRepo, onRepoClick: (Stri
         }
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ReposTheme {
-        val item = GithubRepo(
-            name = "NYTimes",
-            fullName = "nytimes/coolRepo",
-            "a cool repo",
-            1000,
-            "https://github.com"
-        )
-//        RepoItem(repo = item)
-        SearchBar(searchQuery = "nytimes", onSearchQueryChanged = {})
-    }
-}
