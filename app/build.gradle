@@ -81,7 +81,7 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     // Flow
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 
     // ChromeTabs
     implementation "androidx.browser:browser:1.5.0"
@@ -91,5 +91,17 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     androidTestImplementation "androidx.room:room-testing:$room_version"
+
+    // Testing
+    androidTestImplementation "androidx.test:core-ktx:1.5.0"
+    androidTestImplementation "androidx.test.ext:junit-ktx:1.1.5"
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
+    testImplementation 'org.assertj:assertj-core:3.23.1'
+
+    // Retrofit testing
+    testImplementation "com.squareup.okhttp3:mockwebserver:4.9.0"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
 }

@@ -1,6 +1,7 @@
-package com.example.repos.data
+package com.example.repos.data.database
 
 import androidx.room.*
+import com.example.repos.data.GithubRepo
 
 @Dao
 interface GithubRepoDao {

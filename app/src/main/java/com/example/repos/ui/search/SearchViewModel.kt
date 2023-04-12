@@ -1,4 +1,4 @@
-package com.example.repos
+package com.example.repos.ui.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

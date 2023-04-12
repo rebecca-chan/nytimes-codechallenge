@@ -2,8 +2,8 @@ package com.example.repos.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.repos.data.GithubRepoDao
-import com.example.repos.data.GithubRepoDatabase
+import com.example.repos.data.database.GithubRepoDao
+import com.example.repos.data.database.GithubRepoDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
