@@ -39,7 +39,7 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun searchRepoByOrg(it: UiState) {
+     suspend fun searchRepoByOrg(it: UiState) {
         uiState.update { it.copy(loading = true) }
         when (val result = repository.getTopThreeRepos(it.searchQuery)) {
             is Results.Success -> {
@@ -58,7 +58,6 @@ class SearchViewModel @Inject constructor(
                 )
             }
         }
-        uiState.update { it.copy(loading = false) }
     }
 
     fun onSearchQueryChanged(query: String) {

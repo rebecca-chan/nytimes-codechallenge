@@ -5,7 +5,7 @@ import com.example.repos.data.GithubRepoRepositoryImpl
 import com.example.repos.data.Results
 import com.example.repos.fakes.FakeGithubRepoApi
 import com.example.repos.fakes.FakeGithubRepoDao
-import com.example.repos.fakes.GithubRepoFixtures
+import com.example.repos.data.GithubRepoFixtures
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.fail
 import kotlinx.coroutines.Dispatchers

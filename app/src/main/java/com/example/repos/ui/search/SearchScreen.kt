@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.repos.data.GithubRepo
@@ -64,7 +65,8 @@ fun SearchBar(
         onValueChange = onSearchQueryChanged,
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp),
+            .heightIn(min = 56.dp)
+            .testTag("searchBarInput"),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,

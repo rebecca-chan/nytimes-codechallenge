@@ -1,4 +1,4 @@
-package com.example.repos.fakes
+package com.example.repos
 
 import com.example.repos.data.GithubRepoFixtures
 import com.example.repos.data.GithubRepoRepository

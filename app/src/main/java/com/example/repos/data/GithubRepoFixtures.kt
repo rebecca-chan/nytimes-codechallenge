@@ -1,6 +1,4 @@
-package com.example.repos.fakes
-
-import com.example.repos.data.GithubRepo
+package com.example.repos.data
 
 class GithubRepoFixtures {
 

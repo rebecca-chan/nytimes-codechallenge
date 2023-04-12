@@ -1,5 +1,6 @@
 package com.example.repos.fakes
 
+import com.example.repos.data.GithubRepoFixtures
 import com.example.repos.data.RepoSearchResponse
 import com.example.repos.data.network.GithubRepoApi
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
